@@ -16,11 +16,13 @@ void dump_array(const void *base, size_t num_elem, size_t elem_size, void (*dump
 {
     assert( base != NULL );
     assert( fp != NULL );
+    const unsigned char *pcb = base;
+    for(size_t i=0;i<num_elem;i++){
+        //printf("--%d\n",*(int*)(base + (i * elem_size )));
+        const void *elem = pcb + i*elem_size;
+        dump_element(elem,fp);
+    }
 
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
 }
 
 void dump_int(const void *p, FILE *fp)
@@ -28,21 +30,20 @@ void dump_int(const void *p, FILE *fp)
     assert( p != NULL );
     assert( fp != NULL );
 
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
-}
+    //printf("--%d\n",*(int*)(p));
+    fp = fopen("int.txt","a+");
+    fprintf(fp,"--%d\n",*(int*)(p));
+    fclose(fp);
+}    
 
 void dump_string(const void *p, FILE *fp)
 {
     assert( p != NULL );
     assert( fp != NULL );
-
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    
+    fp = fopen("string.txt","a+");
+    fprintf(fp,"--%s\n",*(char**)(p));
+    fclose(fp);
 }
 
 int main()

@@ -91,8 +91,25 @@ void *binary_search(const void *key, const void *base, size_t num_elem, size_t e
 
     /* TO STUDENTS:
      *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    //fprintf(stderr, "To be implemented!\n");
+    //abort();
+    const unsigned char *pcb = base;
+    size_t lo = 0;
+    size_t hi = num_elem - 1;
+    void *ret=NULL;
+    while(lo<=hi && ret == NULL){
+        size_t mid = (hi + lo)/2;
+        const void *pmid = pcb + mid*elem_size;
+        int cmp = compar(key,pmid);
+        if(cmp==0){
+            ret = (void*)pmid;
+        }else if(cmp<0){
+            hi = mid-1;
+        }else{
+            lo = mid +1;
+        }
+    }
+    return ret;
 }
 
 int int_cmp(const void *pkey, const void *pelem)
