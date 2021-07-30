@@ -50,20 +50,27 @@ void upo_stack_destroy(upo_stack_t stack, int destroy_data)
 
 void upo_stack_push(upo_stack_t stack, void *data)
 {
+    if(stack == NULL)
+        return;
     upo_stack_node_t *node = malloc(sizeof(upo_stack_node_t));
     node->data = data;
     node->next = stack->top;
     stack->top = node;
     stack->size += 1;
+    
+            //printf("size pop %d\n",(int)stack->size);
 }
 
 void upo_stack_pop(upo_stack_t stack, int destroy_data)
 {
+    if(stack == NULL)
+        return;
     upo_stack_node_t *node = stack->top;
     stack->top = stack->top->next;
     stack->size -=1;
-    if(destroy_data != 0)
+    if(destroy_data != 0){
         free(node->data);
+    }
     free(node);
 }
 
@@ -76,14 +83,18 @@ void* upo_stack_top(const upo_stack_t stack)
 
 int upo_stack_is_empty(const upo_stack_t stack)
 {
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    if(stack==NULL)
+        return 1;
+    if(stack->top == NULL)
+        return 1;
+    else
+        return 0;
 }
 
 size_t upo_stack_size(const upo_stack_t stack)
 {
+    if(stack==NULL)
+        return 0;
     return stack->size;
 }
 
@@ -97,13 +108,17 @@ void upo_stack_clear(upo_stack_t stack, int destroy_data)
      *  1.4 Destroy "node" by invoking "free(node)"
      * 2. Update stack size.
      */
-     for(size_t i=0;i<stack->size;i++){
+     if(stack == NULL)
+        return;
+     size_t n_elem = stack->size;
+     for(size_t i=0;i<n_elem;i++){
         upo_stack_node_t *node_tmp = stack->top;
         stack->top = node_tmp->next;
         if(destroy_data != 0)
             free(node_tmp->data);
         free(node_tmp);
         stack->size-=1;
+       
      }
      //upo_stack_node_t *node_tmp = stack->top;
      //printf("size %d",(int)stack->size);

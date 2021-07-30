@@ -165,7 +165,7 @@ void test_clear()
     assert( upo_stack_size(stack) == n );
 
     upo_stack_clear(stack, 1);
-
+    
     assert( upo_stack_size(stack) == 0 );
 
     upo_stack_destroy(stack, 1);

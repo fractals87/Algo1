@@ -1,0 +1,3 @@
+PER COMPOLARE: da dir UPOalglib : make clean apps
+PER ESEGUIRE : da dir UPOalglib ./apps/postfix_eval -f data/postfix.txt
+
