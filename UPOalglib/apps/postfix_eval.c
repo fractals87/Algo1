@@ -53,34 +53,35 @@ int eval_postfix(const char *expr, long *res)
             if(isdigit(*(char*)ptr)){
                 
                 int x = atoi(ptr);
-                printf("inserisco %d\n", x);
+                //printf("inserisco %d\n", x);
                 /*upo_stack_push(stack, &x);
                 */
                 //size_t sz = sizeof(int);
-                void *dv = NULL;
-                dv = ptr;
+                int* dv = malloc(sizeof(int));
+                //dv = &x;
+                memcpy(dv,&x,sizeof(int));
+                //printf("verifico %d\n", *dv);
                 upo_stack_push(stack, dv);
-                printf("testo dv %d\n", *(int*)dv);
             }else{
                 //printf("%c: lettera\n",*ptr);
                 if(*ptr == '+'){
                     printf("n ele %zu\n", upo_stack_size(stack));
                     int a = *((int*)upo_stack_top(stack));
-                    printf("estaggo %d\n",a);
+                    //printf("estaggo %d\n",a);
                     upo_stack_pop(stack,0);
                     printf("n ele %zu\n", upo_stack_size(stack));
                     int b = *((int*)upo_stack_top(stack));
-                    printf("estaggo %d\n",b);
-                    printf("%d + %d = %d\n",a,b,a+b);    
+                    //printf("estaggo %d\n",b);
+                    //printf("%d + %d = %d\n",a,b,a+b);    
                     int res = a + b;
                     upo_stack_push(stack, &res);     
                 }else if(*ptr == '*'){
                     //printf("n ele %zu\n", upo_stack_size(stack));
                     int a = *((int*)upo_stack_top(stack));
-                    printf("estaggo %d\n",a);
+                    //printf("estaggo %d\n",a);
                     upo_stack_pop(stack,0);
                     int b = *((int*)upo_stack_top(stack));
-                    printf("%d + %d = %d\n",a,b,a*b);  
+                    //printf("%d * %d = %d\n",a,b,a*b);  
                     int res = a * b;
                     upo_stack_push(stack, &res);  
                 }
@@ -89,9 +90,9 @@ int eval_postfix(const char *expr, long *res)
         }
         ptr++;
     }
-    *res = 14;
+    memcpy(res,(int*)upo_stack_top(stack),sizeof(int));
+    upo_stack_destroy(stack,0);
     return 1;
-    //abort();
 }
 
 void eval_lines(FILE *fp)
@@ -123,7 +124,7 @@ void eval_lines(FILE *fp)
         }
 
         ok = eval_postfix(line, &res);
-        /*
+        
         if (ok)
         {
             if (res_str != NULL)
@@ -139,7 +140,7 @@ void eval_lines(FILE *fp)
         {
             printf("Expression '%s' -> Malformed\n", line);
         }
-        */
+        
     }
 }
 

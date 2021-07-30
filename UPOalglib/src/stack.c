@@ -108,6 +108,7 @@ void upo_stack_clear(upo_stack_t stack, int destroy_data)
      *  1.4 Destroy "node" by invoking "free(node)"
      * 2. Update stack size.
      */
+     /*
      if(stack == NULL)
         return;
      size_t n_elem = stack->size;
@@ -120,8 +121,13 @@ void upo_stack_clear(upo_stack_t stack, int destroy_data)
         stack->size-=1;
        
      }
+     */
      //upo_stack_node_t *node_tmp = stack->top;
      //printf("size %d",(int)stack->size);
+     
+     if(stack!=NULL)
+        while(stack->size>0)
+            upo_stack_pop(stack,destroy_data);
 
     
 
