@@ -63,6 +63,7 @@ struct upo_bst_s
  * standard C function.
  */
 static void upo_bst_clear_impl(upo_bst_node_t*, int destroy_data);
+upo_bst_node_t* upo_bst_delete_impl(upo_bst_node_t* node, const void *key, upo_bst_comparator_t cmp, int destroy_data);
 
 
 #endif /* UPO_BST_PRIVATE_H */

@@ -90,9 +90,9 @@ void visitor(void *key, void *value, void *context)
         visit_context->count += 1;
     }
 
-/*
-    fprintf(stderr, "%d\n", *((int*) data));
- */
+
+    //fprintf(stderr, "%d\n", *((int*) data));
+ 
 }
 
 
@@ -194,7 +194,6 @@ void test_put_get_contains_delete()
 
         assert( found == 0 );
     }
-
     upo_bst_destroy(bst, 0);
 
     /*
@@ -422,13 +421,14 @@ void test_insert()
         found = upo_bst_contains(bst, &keys1[i]);
 
         assert( found != 0 );
-
+        
         value = upo_bst_get(bst, &keys1[i]);
 
         assert( value != NULL );
         assert( *value == values[i] );
+        //printf("%d==%d\n",values[i],*value);
     }
-
+    //printf("ciao");return 0;
     upo_bst_clear(bst, 0);
 
     /*
@@ -1086,7 +1086,7 @@ void test_null()
     upo_bst_t bst = NULL;
 
     assert( upo_bst_size(bst) == 0 );
-
+//printf("ciao");return 0;
     assert( upo_bst_is_empty(bst) );
 
     upo_bst_clear(bst, 0);
@@ -1113,27 +1113,27 @@ int main()
     fflush(stdout);
     test_insert();
     printf("OK\n");
-
+    
     printf("Test case 'clear'... ");
     fflush(stdout);
     test_clear();
     printf("OK\n");
-
+    
     printf("Test case 'empty'... ");
     fflush(stdout);
     test_empty();
     printf("OK\n");
-
+    
     printf("Test case 'size'... ");
     fflush(stdout);
     test_size();
     printf("OK\n");
-
+    
     printf("Test case 'height'... ");
     fflush(stdout);
     test_height();
     printf("OK\n");
-
+    
     printf("Test case 'traversal'... ");
     fflush(stdout);
     test_traversal();
@@ -1143,6 +1143,5 @@ int main()
     fflush(stdout);
     test_null();
     printf("OK\n");
-
     return 0;
 }
