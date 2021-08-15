@@ -472,28 +472,92 @@ void* upo_bst_ceiling(const upo_bst_t tree, const void *key)
     return upo_bst_ceiling_impl(tree->root, key,tree->key_cmp);
 }
 
+void upo_bst_keys_range_impl(upo_bst_node_t* node, const void* low_key, const void *high_key, upo_bst_key_list_t* list, upo_bst_comparator_t key_cmp)
+{
+    if(node==NULL)
+        return;
+    if(key_cmp(node->key, low_key)>=0)
+        upo_bst_keys_range_impl(node->left, low_key, high_key, list, key_cmp);
+    if(key_cmp(node->key, low_key)>=0 && (key_cmp(node->key, high_key)<=0))
+    {
+        upo_bst_key_list_t keynode = malloc(sizeof(upo_bst_key_list_t));
+        keynode->key = node->key;
+        keynode->next = *list;
+        *list = keynode;
+    }
+    if(key_cmp(node->key, low_key)<=0)
+        upo_bst_keys_range_impl(node->right, low_key, high_key, list, key_cmp);
+}
+
 upo_bst_key_list_t upo_bst_keys_range(const upo_bst_t tree, const void *low_key, const void *high_key)
 {
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    if(tree==NULL)
+        return NULL;
+    if(tree->root == NULL)
+        return NULL;
+
+    upo_bst_key_list_t list = NULL;
+    upo_bst_keys_range_impl(tree->root, low_key, high_key, &list, tree->key_cmp);
+    
+    return list;
+}
+
+void upo_bst_keys_impl(upo_bst_node_t* node, upo_bst_key_list_t* list)
+{
+    if(node!=NULL)
+    {
+        upo_bst_keys_impl(node->left, list);
+        
+        upo_bst_key_list_t keynode = malloc(sizeof(upo_bst_key_list_t));
+        keynode->key = node->key;
+        keynode->next = *list;
+        *list = keynode;
+        
+        upo_bst_keys_impl(node->right, list);
+    }
 }
 
 upo_bst_key_list_t upo_bst_keys(const upo_bst_t tree)
 {
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    if(tree==NULL)
+        return NULL;
+    if(tree->root == NULL)
+        return NULL;
+        
+    upo_bst_key_list_t list = NULL;
+    upo_bst_keys_impl(tree->root,&list);
+    
+    return list;        
+}
+
+int upo_bst_is_bst_impl(upo_bst_node_t* node, const void *min_key, const void *max_key, upo_bst_comparator_t key_cmp)
+{
+    if(node==NULL)
+        return 1;
+    if(node->left != NULL)
+        if(key_cmp(node->key, node->left->key)<0)
+            return 0;
+    if(node->right != NULL)
+        if(key_cmp(node->key, node->right->key)>0)
+            return 0;
+
+    printf("LEFT %d<%d RES %d\n",node->key, node->left->key,key_cmp(node->key, node->left->key) );
+    printf("LEFT %d<%d RES %d\n\n",node->key, node->right->key,key_cmp(node->key, node->left->key) );
+                
+    if(key_cmp(node->key, min_key)<=0 || key_cmp(node->key, max_key)>=0)
+        return 0;
+    return upo_bst_is_bst_impl(node->left,min_key,max_key,key_cmp) && upo_bst_is_bst_impl(node->right,min_key,max_key,key_cmp);
+ return 1;       
 }
 
 int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_key)
 {
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    if(tree==NULL)
+        return NULL;
+    /*if(tree->root == NULL)
+        return NULL;*/
+    //return 1;  
+    return upo_bst_is_bst_impl(tree->root, min_key, max_key, tree->key_cmp);
 }
 
 
