@@ -534,15 +534,20 @@ int upo_bst_is_bst_impl(upo_bst_node_t* node, const void *min_key, const void *m
 {
     if(node==NULL)
         return 1;
-    if(node->left != NULL)
-        if(key_cmp(node->key, node->left->key)<0)
-            return 0;
-    if(node->right != NULL)
-        if(key_cmp(node->key, node->right->key)>0)
-            return 0;
+    if(node->left != NULL){
 
-    printf("LEFT %d<%d RES %d\n",node->key, node->left->key,key_cmp(node->key, node->left->key) );
-    printf("LEFT %d<%d RES %d\n\n",node->key, node->right->key,key_cmp(node->key, node->left->key) );
+        //printf("LEFT %d<%d RES %d\n",*(int*)node->key, *(int*)node->left->key,key_cmp(node->key, node->left->key) );    
+        if(key_cmp(node->key, node->left->key)<0){
+            return 0;
+        }
+    }
+    if(node->right != NULL){
+    //printf("LEFT %d<%d RES %d\n\n",*(int*)node->key, *(int*)node->right->key,key_cmp(node->key, node->left->key) );
+        if(key_cmp(node->key, node->right->key)>0){
+            return 0;
+        }
+    }
+
                 
     if(key_cmp(node->key, min_key)<=0 || key_cmp(node->key, max_key)>=0)
         return 0;
