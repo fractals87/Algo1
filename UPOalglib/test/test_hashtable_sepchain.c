@@ -1069,7 +1069,8 @@ void test_size()
     }
 
     assert( upo_ht_sepchain_size(ht) == n );
-
+    //printf("%d == %d",upo_ht_sepchain_size(ht), n);
+    //return;
     /* Update */
     for (i = 0; i < n; ++i)
     {
@@ -1285,17 +1286,17 @@ int main()
     fflush(stdout);
     test_put_get_contains_delete();
     printf("OK\n");
-
+    
     printf("Test case 'insert/get/delete'... ");
     fflush(stdout);
     test_insert_get_contains_delete();
     printf("OK\n");
-
+    
     printf("Test case 'clear'... ");
     fflush(stdout);
     test_clear();
     printf("OK\n");
-
+    
     printf("Test case 'empty'... ");
     fflush(stdout);
     test_empty();
@@ -1305,7 +1306,7 @@ int main()
     fflush(stdout);
     test_size();
     printf("OK\n");
-
+    
     printf("Test case 'hash_funcs'... ");
     fflush(stdout);
     test_hash_funcs();
@@ -1315,7 +1316,6 @@ int main()
     fflush(stdout);
     test_null();
     printf("OK\n");
-
-
+    
     return 0;
 }

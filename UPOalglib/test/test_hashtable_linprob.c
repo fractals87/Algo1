@@ -97,7 +97,6 @@ void test_put_get_contains_delete()
     upo_ht_linprob_t ht;
 
     /* HT: no collision */
-
     ht = upo_ht_linprob_create(2*m+UPO_HT_LINPROB_DEFAULT_CAPACITY, upo_ht_hash_int_div, int_compare);
 
     assert( ht != NULL );
@@ -108,6 +107,7 @@ void test_put_get_contains_delete()
     {
         upo_ht_linprob_put(ht, &keys1[i], &values[i]);
     }
+
     /* Search */
     for (i = 0; i < n; ++i)
     {
@@ -124,6 +124,7 @@ void test_put_get_contains_delete()
 
         assert( found != 0 );
     }
+    return;
     /* Update */
     for (i = 0; i < n; ++i)
     {
