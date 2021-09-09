@@ -1274,7 +1274,32 @@ void test_null()
     upo_ht_sepchain_destroy(ht, 0);
 }
 
+void test_merge(){
+    int keys1[] = {1,2,3,101};
+    int keys2[] = {10,20,30,40};
+    int values[] = {1,2,3,99};
+    size_t m = MAX(sizeof keys1/sizeof keys1[0], sizeof keys1/sizeof keys2[0]);
+    size_t n = 0;
+    size_t i;
+    upo_ht_sepchain_t src_ht;
+    upo_ht_sepchain_t dest_ht;
 
+    /* HT: no collision */
+
+    src_ht = upo_ht_sepchain_create(2*m+UPO_HT_SEPCHAIN_DEFAULT_CAPACITY, upo_ht_hash_int_div, int_compare);
+    dest_ht = upo_ht_sepchain_create(2*m+UPO_HT_SEPCHAIN_DEFAULT_CAPACITY, upo_ht_hash_int_div, int_compare);
+    
+    n = sizeof keys1/sizeof keys1[0];
+    n = sizeof keys2/sizeof keys2[0];
+    /* Insertion */
+    for (i = 0; i < n; ++i)
+    {
+        upo_ht_sepchain_put(src_ht, &keys1[i], &values[i]);
+        upo_ht_sepchain_put(dest_ht, &keys2[i], &values[i]);
+    }
+
+    upo_ht_sepchain_merge(src_ht, dest_ht);
+}
 int main()
 {
     printf("Test case 'create/destroy'... ");
@@ -1315,6 +1340,11 @@ int main()
     printf("Test case 'null'... ");
     fflush(stdout);
     test_null();
+    printf("OK\n");
+    
+    printf("Test case MERGE...\n");
+    fflush(stdout);
+    test_merge();
     printf("OK\n");
     
     return 0;

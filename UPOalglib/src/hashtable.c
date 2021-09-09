@@ -31,6 +31,61 @@
 
 /*** EXERCISE #1 - BEGIN of HASH TABLE with SEPARATE CHAINING ***/
 
+void upo_ht_sepchain_merge(upo_ht_sepchain_t src_ht, upo_ht_sepchain_t dest_ht)
+{
+    printf("CAPACITY : %zu\n", dest_ht->capacity);
+    printf("SRC\n");
+    for (int i = 0; i < src_ht->capacity; ++i)
+    {
+        upo_ht_sepchain_list_node_t *n = src_ht->slots[i].head;
+        if(n!=NULL)
+        {
+            printf("POSIZIONE %d:",i);
+            while(n!=NULL){
+                printf("-%d-",*(int*)n->value);
+                n=n->next;
+            }
+            printf("\n");
+        }
+    }   
+    printf("DEST\n");    
+    for (int i = 0; i < dest_ht->capacity; ++i)
+    {
+        upo_ht_sepchain_list_node_t *n = dest_ht->slots[i].head;
+        if(n!=NULL)
+        {
+            printf("POSIZIONE %d:",i);
+            //while(n!=NULL){
+                printf("-%d-",*(int*)n->value);
+                n=n->next;
+            //}
+            printf("\n");
+        }
+    }
+    
+    for (int i = 0; i < src_ht->capacity; ++i)
+    {
+        upo_ht_sepchain_list_node_t *n = src_ht->slots[i].head;
+        if(n!=NULL)
+        {
+            upo_ht_sepchain_put(dest_ht, n->key, n->value);
+        }
+    }
+    printf("AFTER MERGE\n");
+    for (int i = 0; i < dest_ht->capacity; ++i)
+    {
+        upo_ht_sepchain_list_node_t *n = dest_ht->slots[i].head;
+        if(n!=NULL)
+        {
+            printf("POSIZIONE %d:",i);
+            while(n!=NULL){
+                printf("-%d-",*(int*)n->value);
+                n=n->next;
+            }
+            printf("\n");
+        }
+    }
+}    
 
 upo_ht_sepchain_t upo_ht_sepchain_create(size_t m, upo_ht_hasher_t key_hash, upo_ht_comparator_t key_cmp)
 {
@@ -139,36 +194,33 @@ upo_ht_sepchain_list_node_t* createNode()
 
 void* upo_ht_sepchain_put(upo_ht_sepchain_t ht, void *key, void *value)
 {
-    //REIMPLEMENTATA 2 VOLTE
-    void *old_value = NULL;
-    
+    void *oldValue = NULL;
     size_t h = ht->key_hash(key, ht->capacity);
-    //printf("h: %zu\n",h);fflush(stdout);
-    upo_ht_sepchain_list_node_t *n = ht->slots[h].head;
-    while(n!=NULL && ht->key_cmp(key,n->key)!=0)
+    upo_ht_sepchain_list_node_t* node = ht->slots[h].head;
+    
+    while(node!=NULL && ht->key_cmp(key,node->key)!=0)
     {
-        n=n->next;
+        node = node->next;
     }
-    if(n==NULL){
-        upo_ht_sepchain_list_node_t *node = malloc(sizeof(upo_ht_sepchain_list_node_t));
+    
+    if(node==NULL)
+    {
+        node = malloc(sizeof(upo_ht_sepchain_list_node_t));
         node->key = key;
         node->value = value;
-        
         node->next = ht->slots[h].head;
         ht->slots[h].head = node;
         ht->size+=1;
     }
     else
     {
-        old_value = n->value;
-        n->value = value;
-        n->key = key;
+        oldValue = node->value;
+        node->value = value;
     }
-    
-    return old_value;
-    
 
-    /*
+    return oldValue;
+
+/*
     void *old_value = NULL;
 
     size_t h = ht->key_hash(key, ht->capacity);
@@ -472,10 +524,35 @@ void* upo_ht_linprob_put(upo_ht_linprob_t ht, void *key, void *value)
 
 void upo_ht_linprob_insert(upo_ht_linprob_t ht, void *key, void *value)
 {
+
+
     if(upo_ht_linprob_load_factor(ht) >= 0.5)
     {
         upo_ht_linprob_resize(ht, upo_ht_linprob_capacity(ht) * 2);
     }
+    size_t htomb = -1;
+    size_t foundtomb = 0;
+    size_t h = ht->key_hash(key,ht->capacity);
+    while((ht->slots[h].key!=NULL && ht->key_cmp(ht->slots[h].key, key)!=0) || ht->slots[h].tombstone == 1)
+    {
+        if(ht->slots[h].tombstone == 1)
+        {
+            foundtomb=1;
+            htomb = h;
+        }
+        h = (h+1)%upo_ht_linprob_capacity(ht);
+    }
+    
+    if(ht->slots[h].key==NULL){
+        if(foundtomb==1)
+            h = htomb;
+            
+        ht->slots[h].key = key;
+        ht->slots[h].value = value;
+        ht->slots[h].tombstone = 0;
+        ht->size+=1;
+    }
+    /*
     upo_ht_hasher_t hasher = ht->key_hash;
     upo_ht_comparator_t cmp = ht->key_cmp;
     
@@ -504,6 +581,7 @@ void upo_ht_linprob_insert(upo_ht_linprob_t ht, void *key, void *value)
         ht->slots[h].tombstone = 0;
         ht->size+=1;
     }
+    */
 }
 
 void* upo_ht_linprob_get(const upo_ht_linprob_t ht, const void *key)

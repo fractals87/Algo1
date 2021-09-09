@@ -56,6 +56,7 @@ void test_sort_algorithm(void (*sort)(void*,size_t,size_t,upo_sort_comparator_t)
 static void test_insertion_sort();
 static void test_merge_sort();
 static void test_quick_sort();
+static void test_odd_even();
 
 
 int double_comparator(const void *a, const void *b)
@@ -101,7 +102,7 @@ void test_sort_algorithm(void (*sort)(void*,size_t,size_t,upo_sort_comparator_t)
     }
     free(da_clone);
     assert( ok );
-
+    
     ok = 1;
     sa_clone = malloc(N*sizeof(char*));
     assert( sa_clone != NULL );
@@ -125,6 +126,7 @@ void test_sort_algorithm(void (*sort)(void*,size_t,size_t,upo_sort_comparator_t)
     }
     free(ca_clone);
     assert( ok );
+    
 }
 
 void test_insertion_sort()
@@ -142,9 +144,14 @@ void test_quick_sort()
     test_sort_algorithm(upo_quick_sort);
 }
 
+void test_odd_even()
+{
+    test_sort_algorithm(upo_odd_even);
+}
 
 int main()
 {
+    
     printf("Test case 'insertion sort'... ");
     fflush(stdout);
     test_insertion_sort();
@@ -159,6 +166,13 @@ int main()
     fflush(stdout);
     test_quick_sort();
     printf("OK\n");
+        
+    printf("Test case 'ODD-EVEN'... ");
+    fflush(stdout);
+    test_odd_even();
+    printf("OK\n");
+    
+    
 
     return 0;
 }

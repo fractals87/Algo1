@@ -44,6 +44,7 @@ void upo_insertion_sort(void *base, size_t n, size_t size, upo_sort_comparator_t
     for(size_t i=1; i<n; i++){
         size_t j=i;
         while(j>0 && cmp(base_ptr + j*size, base_ptr + (j-1)*size)<0 ){
+            //printf("INS %f\n ",*((double*)(base_ptr+j*size)));fflush(stdout);
             memmove(temp,base_ptr + (j-1) * size, size);
             memmove(base_ptr + (j-1)*size,base_ptr +j*size,size);
             memmove(base_ptr + j*size,temp,size);
@@ -210,7 +211,8 @@ size_t upo_partition_median_3(void *base, size_t lo, size_t hi, size_t size, upo
 
     size_t j = partition(base,lo+1,hi-1,size,cmp);
 
-   // printf(" %s ",*((char**)(base_ptr+j*size)))
+    printf("MEDIAN %s ",*((char**)(base_ptr+j*size)));
+    fflush(stdout);
 
     return j;
 
@@ -229,8 +231,9 @@ void upo_quick_sort_median3_cutoff_rec(void *base, size_t lo, size_t hi, size_t 
     else{
 
         size_t j= upo_partition_median_3(base,lo,hi,size,cmp);
-        /*unsigned char* base_ptr = (unsigned char*) base;
-        printf(" %s ",*((char**)(base_ptr+j*size)));*/
+        unsigned char* base_ptr = (unsigned char*) base;
+        printf("QUICK %s \n",*((char**)(base_ptr+j*size)));
+        fflush(stdout);
 
         if(j>0)
             upo_quick_sort_median3_cutoff_rec(base,lo,j-1,size,cmp);
@@ -242,4 +245,96 @@ void upo_quick_sort_median3_cutoff_rec(void *base, size_t lo, size_t hi, size_t 
 void upo_quick_sort_median3_cutoff(void *base, size_t n, size_t size, upo_sort_comparator_t cmp){
 
     upo_quick_sort_median3_cutoff_rec(base,0,n-1,size,cmp);
+}
+
+void upo_odd_even(void *base, size_t n, size_t size, upo_sort_comparator_t cmp)
+{
+    
+    size_t i;
+    char* prt = (char*)base; 
+    printf("\n");
+    for(i=0;i<n-1;i++){
+        printf("%.2f ", *((double*)(prt+i*size))); fflush(stdout);
+    }
+    printf("\n");
+    char* tmp = malloc(size);
+    int order=0;
+    while(order==0)
+    {
+        order=1;
+        //printf("\n in order\n");fflush(stdout);
+        for(i=1; i<n-1; i+=2 )
+        {   
+            if(cmp(prt+i*size,prt+(i+1)*size)>0)
+            {
+                //printf("ciao1\n");fflush(stdout);        
+                memmove(tmp,prt+i*size,size);   
+                //printf("ciao2\n");fflush(stdout);                        
+                memmove(prt+i*size,prt+(i+1)*size,size);
+                memmove(prt+(i+1)*size,tmp,size);
+                //printf("ciao3\n");fflush(stdout);                        
+                order=0;
+            }
+        }
+        
+        for(i=0; i<n-1; i+=2 )
+        {
+            if(cmp(prt+i*size,prt+(i+1)*size)>0)
+            {
+                memmove(tmp,prt+i*size,size);
+                memmove(prt+i*size,prt+(i+1)*size,size);
+                memmove(prt+(i+1)*size,tmp,size);
+                order=0;                
+            }
+        }
+    }
+
+    for(i=0;i<n-1;i++){
+        printf("%.2f ", *((double*)(prt+i*size))); fflush(stdout);
+    }
+    printf("\n");
+
+    
+
+    /*
+    int sorted = 0;
+    unsigned char* base_ptr = (unsigned char*) base;
+    //printf("NELEM : %zu\n",n);
+    //printf("SIZE : %d\n",size);    
+    //printf("FIRST %f\n ",*((double*)(base_ptr)));fflush(stdout);
+    //PRINT 
+    for(size_t i=0; i<n-1; i++){
+        //printf(" %.2f ",*((double*)(base_ptr+i*size)));
+        fflush(stdout);
+    }
+    //printf("\n");
+    while(sorted == 0)
+    {
+        sorted = 1;
+        for(size_t i=1; i<n-1; i+=2){
+            //printf("CMP %.2f -- %.2f\n  ",*((double*)(base_ptr+i*size)),*((double*)(base_ptr+(i+1)*size)));
+            if(cmp(base_ptr + i*size,base_ptr + (i+1)*size)>0)
+            {
+                //swap(base_ptr + i*size,base_ptr + (i+1)*size,size);
+                char *temp = malloc(size);
+                memmove(temp,base_ptr+i*size,size);
+                memmove(base_ptr+i*size,base_ptr+(i+1)*size,size);
+                memmove(base_ptr+(i+1)*size,temp,size);
+                sorted=0;                
+            }
+        }
+        for(size_t i=0; i<n-1; i+=2){
+            if(cmp(base_ptr + i*size,base_ptr + (i+1)*size)>0)
+            {
+                swap(base_ptr + i*size,base_ptr + (i+1)*size,size);
+                sorted = 0;                
+            }
+        }
+    }
+    //PRINT 
+    for(size_t i=0; i<n-1; i++){
+        //printf(" %.2f ",*((double*)(base_ptr+i*size)));
+        fflush(stdout);
+    }
+    */
 }

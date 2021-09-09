@@ -91,5 +91,6 @@ void upo_merge_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp
  */
 void upo_quick_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp);
 
+void upo_odd_even(void *base, size_t n, size_t size, upo_sort_comparator_t cmp);
 
 #endif /* UPO_SORT_H */
