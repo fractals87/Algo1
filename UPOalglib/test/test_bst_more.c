@@ -271,12 +271,12 @@ void test_delete_min_max()
     /* BST: empty tree */
 
     upo_bst_delete_min(bst, 0);
+    //printf("END");return;
     key = upo_bst_min(bst);
     assert( key == NULL );
     upo_bst_delete_max(bst, 0);
     key = upo_bst_max(bst);
     assert( key == NULL );
-
     /*
      * BST:
      *         4
@@ -303,14 +303,14 @@ void test_delete_min_max()
     key = upo_bst_min(bst);
     assert( key != NULL );
     assert( *key != min_key );
-    //printf("%d==%d",*key,min_key);return 0;
+
     upo_bst_delete_max(bst, 0);
+
     key = upo_bst_max(bst);
     assert( key != NULL );
     assert( *key != max_key );
 
     upo_bst_clear(bst, 0);
-
     /*
      * BST:
      *   0
@@ -340,6 +340,7 @@ void test_delete_min_max()
     {
         upo_bst_insert(bst, &keys2[i], &values[i]);
     }
+//printf("ciao");return;
     /* Delete & Search */
     upo_bst_delete_min(bst, 0);
     key = upo_bst_min(bst);

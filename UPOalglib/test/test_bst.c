@@ -1098,8 +1098,8 @@ void test_null()
 
 void test_paolo()
 {
-    int keys1[] = {4,3,2,1,0,5,6,7,8,9};
-    int values[] = {0,1,2,3,4,5,6,7,8,9};
+    int keys1[] = {4,3,2,1,0,5,6,7,8,10};
+    int values[] = {0,1,2,3,4,5,6,7,8,10};
     size_t n = 0;
     size_t i;
     upo_bst_t bst;
@@ -1120,7 +1120,7 @@ void test_paolo()
      *  /             \
      * 0               8
      *                  \
-     *                   9
+     *                   10
      */
 
     n = sizeof keys1/sizeof keys1[0];
@@ -1130,11 +1130,11 @@ void test_paolo()
         upo_bst_insert(bst, &keys1[i], &values[i]);
     }
     int low = 2;
-    int high = 6;
+    int high = 9;
     size_t res = upo_bst_count_keys_range(bst,&low,&high);
     printf("RES: --%zu--\n",res);
     //fflush("stdout");
-    assert(res==5);
+    assert(res==7);
 
     upo_bst_clear(bst, 0);
     upo_bst_destroy(bst, 0);
@@ -1183,6 +1183,47 @@ void test_max2()
     upo_bst_destroy(bst, 0);
 }
 
+void test_min2()
+{
+    int keys1[] = {4,3,2,1,0,5,6,7,8,9};
+    int values[] = {0,1,2,3,4,5,6,7,8,9};
+    size_t n = 0;
+    size_t i;
+    upo_bst_t bst;
+
+    bst = upo_bst_create(int_compare);
+
+    assert( bst != NULL );
+
+    /*
+     * BST:
+     *         4
+     *        / \
+     *       3   5
+     *      /     \
+     *     2       6
+     *    /         \
+     *   1           7
+     *  /             \
+     * 0               8
+     *                  \
+     *                   9
+     */
+
+    n = sizeof keys1/sizeof keys1[0];
+    /* Insertion */
+    for (i = 0; i < n; ++i)
+    {
+        upo_bst_insert(bst, &keys1[i], &values[i]);
+    }
+    int res = upo_bst_min2(bst);
+    printf("RES: --%d--\n",res);
+    assert(res==0);   
+    
+    upo_bst_clear(bst, 0);
+
+    upo_bst_destroy(bst, 0);
+}
 
 int main()
 {
@@ -1231,7 +1272,7 @@ int main()
     test_null();
     printf("OK\n");
     
-    printf("TEST PAOLO...");
+    printf("Test Key Range...");
     fflush(stdout);
     test_paolo();
     printf("OK\n");
@@ -1239,6 +1280,11 @@ int main()
     printf("TEST MAX...");
     fflush(stdout);
     test_max2();
+    printf("OK\n");
+    
+        printf("TEST MIN...");
+    fflush(stdout);
+    test_min2();
     printf("OK\n");
     return 0;
 }

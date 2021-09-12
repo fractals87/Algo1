@@ -249,7 +249,115 @@ void upo_quick_sort_median3_cutoff(void *base, size_t n, size_t size, upo_sort_c
 
 void upo_odd_even(void *base, size_t n, size_t size, upo_sort_comparator_t cmp)
 {
+    char* ptr = (char*) base;
+    char* tmp = malloc(size);
+    size_t order = 0;
+    while(order==0)
+    {
+        order = 1;
+        for(size_t i=1; i<n-1; i+=2)
+        {
+            if(cmp(ptr+i*size, ptr+(i+1)*size)>0)
+            {
+                order = 0;
+                memmove(tmp,ptr+i*size,size);
+                memmove(ptr+i*size,ptr+(i+1)*size,size);
+                memmove(ptr+(i+1)*size,tmp,size);                        
+            }
+        }
+        
+        for(size_t i=0; i<n-1; i+=2)
+        {
+            if(cmp(ptr+i*size, ptr+(i+1)*size)>0)
+            {
+                order = 0;
+                memmove(tmp,ptr+i*size,size);
+                memmove(ptr+i*size,ptr+(i+1)*size,size);
+                memmove(ptr+(i+1)*size,tmp,size);                        
+            }
+        }
+    }
     
+        for(size_t i=0; i<n-1; i++)
+        {
+            printf("%.2f ", *(float*)ptr+i*size);
+        }
+        printf("\n");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    char* ptr = (char *)base;
+    char* tmp = malloc(size);
+    size_t i = 0;
+    
+    size_t order = 0;
+    
+    while(order ==0){
+        order=1;
+        for(i=1;i<n-1;i+=2)
+        {
+            //printf("%.1f ",*((double*)(ptr+i*size)));fflush(stdout);
+            if(cmp(ptr+i*size,ptr+(i+1)*size)>0)
+            {
+                order = 0;
+                memmove(tmp, ptr+i*size,size);
+                memmove(ptr+i*size, ptr+(i+1)*size,size);
+                memmove(ptr+(i+1)*size,tmp,size);            
+            }
+        }
+        
+        for(i=0;i<n-1;i+=2)
+        {
+            //printf("%.1f ",*((double*)(ptr+i*size)));fflush(stdout);
+            if(cmp(ptr+i*size,ptr+(i+1)*size)>0)
+            {
+                order = 0;
+                memmove(tmp, ptr+i*size,size);
+                memmove(ptr+i*size, ptr+(i+1)*size,size);
+                memmove(ptr+(i+1)*size,tmp,size);            
+            }
+        }
+    }
+    */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /*
     size_t i;
     char* prt = (char*)base; 
     printf("\n");
@@ -293,7 +401,7 @@ void upo_odd_even(void *base, size_t n, size_t size, upo_sort_comparator_t cmp)
         printf("%.2f ", *((double*)(prt+i*size))); fflush(stdout);
     }
     printf("\n");
-
+    */
     
 
     /*

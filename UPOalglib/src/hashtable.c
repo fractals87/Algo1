@@ -33,33 +33,33 @@
 
 void upo_ht_sepchain_merge(upo_ht_sepchain_t src_ht, upo_ht_sepchain_t dest_ht)
 {
-    printf("CAPACITY : %zu\n", dest_ht->capacity);
-    printf("SRC\n");
+    //printf("CAPACITY : %zu\n", dest_ht->capacity);
+    //printf("SRC\n");
     for (int i = 0; i < src_ht->capacity; ++i)
     {
         upo_ht_sepchain_list_node_t *n = src_ht->slots[i].head;
         if(n!=NULL)
         {
-            printf("POSIZIONE %d:",i);
+            //printf("POSIZIONE %d:",i);
             while(n!=NULL){
-                printf("-%d-",*(int*)n->value);
+                //printf("-%d-",*(int*)n->value);
                 n=n->next;
             }
-            printf("\n");
+            //printf("\n");
         }
     }   
-    printf("DEST\n");    
+    //printf("DEST\n");    
     for (int i = 0; i < dest_ht->capacity; ++i)
     {
         upo_ht_sepchain_list_node_t *n = dest_ht->slots[i].head;
         if(n!=NULL)
         {
-            printf("POSIZIONE %d:",i);
+            //printf("POSIZIONE %d:",i);
             //while(n!=NULL){
-                printf("-%d-",*(int*)n->value);
+                //printf("-%d-",*(int*)n->value);
                 n=n->next;
             //}
-            printf("\n");
+            //printf("\n");
         }
     }
     
@@ -71,18 +71,18 @@ void upo_ht_sepchain_merge(upo_ht_sepchain_t src_ht, upo_ht_sepchain_t dest_ht)
             upo_ht_sepchain_put(dest_ht, n->key, n->value);
         }
     }
-    printf("AFTER MERGE\n");
+    //printf("AFTER MERGE\n");
     for (int i = 0; i < dest_ht->capacity; ++i)
     {
         upo_ht_sepchain_list_node_t *n = dest_ht->slots[i].head;
         if(n!=NULL)
         {
-            printf("POSIZIONE %d:",i);
+            //printf("POSIZIONE %d:",i);
             while(n!=NULL){
-                printf("-%d-",*(int*)n->value);
+                //printf("-%d-",*(int*)n->value);
                 n=n->next;
             }
-            printf("\n");
+            //printf("\n");
         }
     }
 }    
@@ -253,6 +253,24 @@ void* upo_ht_sepchain_put(upo_ht_sepchain_t ht, void *key, void *value)
 
 void upo_ht_sepchain_insert(upo_ht_sepchain_t ht, void *key, void *value)
 {
+    size_t h = ht->key_hash(key,ht->capacity);
+    //printf("%zu\n",h);
+    upo_ht_sepchain_list_node_t* node = ht->slots[h].head;
+    while(node!=NULL && ht->key_cmp(key,node->key)!=0)
+    {
+        node=node->next;
+    }
+    if(node==NULL)
+    {
+        node =malloc(sizeof(upo_ht_sepchain_list_node_t));
+        node->key = key;
+        node->value = value;
+        node->next = ht->slots[h].head;
+        ht->slots[h].head = node;
+        ht->size+=1;
+    }
+
+    /*
     void *old_value = NULL;
 
     size_t h = ht->key_hash(key,ht->capacity);
@@ -273,6 +291,7 @@ void upo_ht_sepchain_insert(upo_ht_sepchain_t ht, void *key, void *value)
         
         ht->size+=1;
     }
+    */
 }
 
 void* upo_ht_sepchain_get(const upo_ht_sepchain_t ht, const void *key)
@@ -329,6 +348,28 @@ void destroyNode(upo_ht_sepchain_list_node_t* n,int destroy_data)
 void upo_ht_sepchain_delete(upo_ht_sepchain_t ht, const void *key, int destroy_data)
 {
     size_t h = ht->key_hash(key,ht->capacity);
+    upo_ht_sepchain_list_node_t* node = ht->slots[h].head;
+    upo_ht_sepchain_list_node_t* prec = NULL;
+    while(node!=NULL && ht->key_cmp(key,node->key)!=0)
+    {
+        prec = node;
+        node = node->next;
+    }
+    if(node!=NULL)
+    {
+        if(prec==NULL)
+        {
+            ht->slots[h].head = node->next;
+        }
+        else
+        {
+            prec->next = node->next;
+        }    
+        destroyNode(node,destroy_data);
+        ht->size-=1;
+    }
+    /*
+    size_t h = ht->key_hash(key,ht->capacity);
     upo_ht_sepchain_list_node_t* n = ht->slots[h].head;
     upo_ht_sepchain_list_node_t* p = NULL;
     while(n!=NULL && ht->key_cmp(key, n->key)!=0)
@@ -349,6 +390,7 @@ void upo_ht_sepchain_delete(upo_ht_sepchain_t ht, const void *key, int destroy_d
         destroyNode(n, destroy_data);
         ht->size-=1;
     }
+    */
 }
 
 size_t upo_ht_sepchain_size(const upo_ht_sepchain_t ht)
@@ -525,7 +567,43 @@ void* upo_ht_linprob_put(upo_ht_linprob_t ht, void *key, void *value)
 void upo_ht_linprob_insert(upo_ht_linprob_t ht, void *key, void *value)
 {
 
+    if(upo_ht_linprob_load_factor(ht) >= 0.5)
+    {
+        upo_ht_linprob_resize(ht, upo_ht_linprob_capacity(ht) * 2);
+    }
+    
+    size_t h = ht->key_hash(key,upo_ht_linprob_capacity(ht));
+    size_t foundTomb = 0;
+    size_t hTomb = -1;
+    while((ht->slots[h].key!=NULL && ht->key_cmp(ht->slots[h].key, key)!=0) || ht->slots[h].tombstone==1)
+    {
+        if(ht->slots[h].tombstone==1){
+            foundTomb = 1;
+            hTomb = h;
+        }
+            
+        h = (h+1)%upo_ht_linprob_capacity(ht);
+    }
+    
+    if(ht->slots[h].key==NULL)
+    {
+        if(foundTomb==1)
+            h=hTomb;
+        ht->slots[h].key = key;
+        ht->slots[h].value = value;
+        ht->slots[h].tombstone = 0;
+        ht->size+=1;
+    }
 
+
+
+
+
+
+
+
+
+    /*
     if(upo_ht_linprob_load_factor(ht) >= 0.5)
     {
         upo_ht_linprob_resize(ht, upo_ht_linprob_capacity(ht) * 2);
@@ -552,6 +630,7 @@ void upo_ht_linprob_insert(upo_ht_linprob_t ht, void *key, void *value)
         ht->slots[h].tombstone = 0;
         ht->size+=1;
     }
+    */
     /*
     upo_ht_hasher_t hasher = ht->key_hash;
     upo_ht_comparator_t cmp = ht->key_cmp;
@@ -587,6 +666,23 @@ void upo_ht_linprob_insert(upo_ht_linprob_t ht, void *key, void *value)
 void* upo_ht_linprob_get(const upo_ht_linprob_t ht, const void *key)
 {
     size_t h = ht->key_hash(key,ht->capacity);
+    //while(ht->slots[h].key!=NULL && (ht->key_cmp(key, ht->slots[h].key)!=0) || ht->slots[h].tombstone==1)
+    while((ht->slots[h].key!=NULL && ht->key_cmp(key, ht->slots[h].key)!=0) || ht->slots[h].tombstone==1)
+    {   
+        h = (h+1)%upo_ht_linprob_capacity(ht);
+    }    
+
+    if(ht->slots[h].key!=NULL)
+    {   
+        return ht->slots[h].value;
+    }    
+    else
+    {
+        return NULL;
+    }
+
+    /*
+    size_t h = ht->key_hash(key,ht->capacity);
     while(ht->slots[h].key!=NULL && (ht->key_cmp(key, ht->slots[h].key)!=0) || ht->slots[h].tombstone==1)
     {
         //printf("--%d\n",ht->slots[h].key);fflush(stdout);
@@ -600,6 +696,7 @@ void* upo_ht_linprob_get(const upo_ht_linprob_t ht, const void *key)
     {
         return NULL;
     }
+    */
 }
 
 int upo_ht_linprob_contains(const upo_ht_linprob_t ht, const void *key)
@@ -724,6 +821,29 @@ void upo_ht_linprob_resize(upo_ht_linprob_t ht, size_t n)
 
 upo_ht_key_list_t upo_ht_sepchain_keys(const upo_ht_sepchain_t ht)
 {
+    if(ht==NULL)
+        return NULL;
+    if(ht->slots == NULL)
+        return NULL;
+    upo_ht_key_list_t out = NULL;
+    for(size_t i=0;i<upo_ht_sepchain_capacity(ht);i++)
+    {
+        upo_ht_sepchain_list_node_t* node = ht->slots[i].head;
+        while(node!=NULL)
+        {
+            upo_ht_key_list_node_t* newnode = malloc(sizeof(upo_ht_key_list_node_t));
+            newnode->key = node->key;
+            newnode->next = out;
+            out = newnode;
+            
+            node = node->next;
+        }
+    }
+
+
+    return out;
+
+    /*
     //printf("ciao\n");fflush(stdout);
     if(ht==NULL)
         return NULL;
@@ -746,10 +866,30 @@ upo_ht_key_list_t upo_ht_sepchain_keys(const upo_ht_sepchain_t ht)
     }
     
     return out;
+    */
 }
 
 void upo_ht_sepchain_traverse(const upo_ht_sepchain_t ht, upo_ht_visitor_t visit, void *visit_context)
 {
+    if(ht==NULL)
+        return NULL;
+        
+    if(ht->slots==NULL)
+        return NULL;    
+   
+    for(size_t i=0;i<ht->capacity;i++)
+    {
+        upo_ht_sepchain_list_node_t* node = ht->slots[i].head;
+        while(node!=NULL)
+        {
+            visit(node->key, node->value, visit_context);
+            node=node->next;        
+        }
+    }
+
+    
+    
+    /*
     if(ht==NULL)
         return NULL;
     if(ht->slots==NULL)
@@ -765,6 +905,7 @@ void upo_ht_sepchain_traverse(const upo_ht_sepchain_t ht, upo_ht_visitor_t visit
         }
     
     }
+    */
 }
 
 upo_ht_key_list_t upo_ht_linprob_keys(const upo_ht_linprob_t ht)

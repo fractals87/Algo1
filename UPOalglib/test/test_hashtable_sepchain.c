@@ -1342,7 +1342,7 @@ int main()
     test_null();
     printf("OK\n");
     
-    printf("Test case MERGE...\n");
+    printf("Test case MERGE...");
     fflush(stdout);
     test_merge();
     printf("OK\n");
